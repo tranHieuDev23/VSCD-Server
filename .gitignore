@@ -1,0 +1,4 @@
+.env
+.flaskenv
+Dataset
+__pycache__
