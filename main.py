@@ -29,6 +29,10 @@ def init():
         mkdir(DATASET_DIRECTORY)
 
 
+MSSV_REGEX = re.compile("^20\\d{6}$")
+NUM_CLASSES = len(CLASSES)
+
+
 @app.route('/api/speak-submit', methods=['POST'])
 def speak_submit():
     try:
@@ -46,6 +50,16 @@ def speak_submit():
             file.save(filepath)
             recordings.append((filepath, authorId, item))
         insert_recordings(recordings)
+        if ('mssv' in request.form and len(recordings) == NUM_CLASSES):
+            mssv = request.form['mssv']
+            if (MSSV_REGEX.match(mssv)):
+                request_data = {
+                    'mssv': mssv
+                }
+                # res = requests.post(
+                #     'https://pitec.xfaceid.vn/attendance_api', json=request_data)
+                # if (res.status_code != 200):
+                #     return ('', 400)
     except:
         return ('', 400)
     return ('', 200)
@@ -81,6 +95,8 @@ def get_validation_audio():
         if (validation == None):
             return ('', 400)
         (validation_id, filepath, result) = validation
+        if (result != VALIDATION_RESULT_NOT_DONE):
+            return ('', 400)
         return send_file(filepath)
     except:
         return ('', 400)
