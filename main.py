@@ -4,8 +4,6 @@ from flask_compress import Compress
 from os import mkdir
 from os.path import exists, join
 import re
-import base64
-import requests
 
 from utils import CLASSES, generate_filename, generate_validation_id
 from db import init_database, insert_recordings, insert_validations, get_recordings_from_different_user, get_validation, update_validations, \
@@ -50,16 +48,6 @@ def speak_submit():
             file.save(filepath)
             recordings.append((filepath, authorId, item))
         insert_recordings(recordings)
-        if ('mssv' in request.form and len(recordings) == NUM_CLASSES):
-            mssv = request.form['mssv']
-            if (MSSV_REGEX.match(mssv)):
-                request_data = {
-                    'mssv': mssv
-                }
-                # res = requests.post(
-                #     'https://pitec.xfaceid.vn/attendance_api', json=request_data)
-                # if (res.status_code != 200):
-                #     return ('', 400)
     except:
         return ('', 400)
     return ('', 200)
